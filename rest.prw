@@ -1,17 +1,28 @@
-#INCLUDE 'TOTVS.CH'
 #INCLUDE 'RESTFUL.CH'
-#INCLUDE 'TBICONN.CH'
+#INCLUDE 'PROTHEUS.CH'
 
 User Function restApi()
 
-    Local cURL := 'https://cep.awesomeapi.com.br/json/'
+    Local cURL := 'https://viacep.com.br/ws/'
     Local oRest := FWRest():New(cURL)
     Local cCep := ''
+    Local cErro := ''
+    Local cResultado := ''
 
     cCep := FwInputBox('DIGITE O CEP')
+    oRest:setPath(cCep + '/json/')
 
-    oRest:setPath(cCep)
+    oJson := JSonObject():New()
 
-    Alert(oRest['adress:'][1])
-    
+    if oRest:Get()
+        cResultado := oRest:GetResult()
+        cErro := oJson:fromJson(cResultado)
+        if empty(cErro)
+            cRua := oJson
+            FwAlertInfo(cRua["logradouro"]) 
+        else 
+            alert(cErro)
+        endif 
+    endif             
+
 Return 
